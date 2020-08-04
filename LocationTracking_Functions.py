@@ -502,6 +502,11 @@ def Locate(cap,reference,tracking_params,video_dict,crop=None,prior=None):
             
         #threshold differences and find center of mass for remaining values
         dif[dif<np.percentile(dif,tracking_params['loc_thresh'])]=0
+        #remove influence of wire
+        if tracking_params['rmv_wire'] == True:
+            ksize = tracking_params['wire_krn']
+            kernel = np.ones((ksize,ksize),np.uint8)
+            dif = cv2.morphologyEx(dif, cv2.MORPH_OPEN, kernel)
         com=ndimage.measurements.center_of_mass(dif)
         return ret, dif, com, frame
     
